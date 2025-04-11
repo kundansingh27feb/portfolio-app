@@ -16,7 +16,7 @@ service:
                   connectorRef: account.Github_OAuth_1743922765736
                   gitFetchType: Branch
                   folderPath: portfolio
-                  repoName: portfolio-app
+                  repoName: kundansingh27feb/portfolio-app
                   branch: main
               subChartPath: ""
               skipResourceVersioning: false
