@@ -16,23 +16,13 @@ service:
                   connectorRef: account.Github_OAuth_1743922765736
                   gitFetchType: Branch
                   folderPath: portfolio
-                  repoName: kundansingh27feb/portfolio-app
+                  repoName: https://github.com/kundansingh27feb/portfolio-app
                   branch: main
               subChartPath: ""
-              skipResourceVersioning: false
+              valuesPaths:
+                - values.yaml
+              skipResourceVersioning: true
               enableDeclarativeRollback: false
               helmVersion: V3
-              fetchHelmChartMetadata: false
-        - manifest:
-            identifier: updateValueyaml
-            type: Values
-            spec:
-              store:
-                type: Github
-                spec:
-                  connectorRef: Github_portfolio
-                  gitFetchType: Branch
-                  paths:
-                    - portfolio/values.yaml
-                  branch: main
+              fetchHelmChartMetadata: true
     type: NativeHelm
