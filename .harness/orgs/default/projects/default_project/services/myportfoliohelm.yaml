@@ -23,4 +23,16 @@ service:
               enableDeclarativeRollback: false
               helmVersion: V3
               fetchHelmChartMetadata: false
+        - manifest:
+            identifier: updateValueyaml
+            type: Values
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: Github_portfolio
+                  gitFetchType: Branch
+                  paths:
+                    - values.yaml
+                  branch: main
     type: NativeHelm
