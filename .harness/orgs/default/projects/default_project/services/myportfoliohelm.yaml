@@ -1,0 +1,5 @@
+service:
+  name: my-portfolio-helm
+  identifier: myportfoliohelm
+  orgIdentifier: default
+  projectIdentifier: default_project
