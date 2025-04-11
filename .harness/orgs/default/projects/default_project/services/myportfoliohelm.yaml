@@ -23,6 +23,6 @@ service:
                 - values.yaml
               skipResourceVersioning: false
               enableDeclarativeRollback: false
-              helmVersion: V2
-              fetchHelmChartMetadata: true
+              helmVersion: V3
+              fetchHelmChartMetadata: false
     type: NativeHelm
