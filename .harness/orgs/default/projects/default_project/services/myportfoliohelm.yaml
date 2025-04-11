@@ -20,7 +20,7 @@ service:
                   branch: main
               subChartPath: ""
               valuesPaths:
-                - https://github.com/kundansingh27feb/portfolio-app/portfolio/values.yaml
+                - portfolio-app/portfolio
               skipResourceVersioning: false
               enableDeclarativeRollback: false
               helmVersion: V3
