@@ -19,6 +19,7 @@ service:
                   repoName: kundansingh27feb/portfolio-app
                   branch: main
               subChartPath: ""
+              valuesPaths: <+input>.allowedValues(v1,v2,v3,v4)
               skipResourceVersioning: false
               enableDeclarativeRollback: false
               helmVersion: V3
