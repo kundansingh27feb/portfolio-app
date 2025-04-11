@@ -33,6 +33,6 @@ service:
                   connectorRef: Github_portfolio
                   gitFetchType: Branch
                   paths:
-                    - values.yaml
+                    - portfolio/values.yaml
                   branch: main
     type: NativeHelm
