@@ -21,8 +21,8 @@ service:
               subChartPath: ""
               valuesPaths:
                 - values.yaml
-              skipResourceVersioning: true
+              skipResourceVersioning: false
               enableDeclarativeRollback: false
-              helmVersion: V3
+              helmVersion: V2
               fetchHelmChartMetadata: true
     type: NativeHelm
