@@ -4,5 +4,22 @@ service:
   orgIdentifier: default
   projectIdentifier: default_project
   serviceDefinition:
-    spec: {}
+    spec:
+      manifests:
+        - manifest:
+            identifier: Stage_Manifest
+            type: HelmChart
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: Github_portfolio
+                  gitFetchType: Branch
+                  folderPath: /
+                  branch: main
+              subChartPath: ""
+              skipResourceVersioning: false
+              enableDeclarativeRollback: false
+              helmVersion: V3
+              fetchHelmChartMetadata: false
     type: NativeHelm
