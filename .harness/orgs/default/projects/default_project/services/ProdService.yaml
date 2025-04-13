@@ -1,0 +1,5 @@
+service:
+  name: Prod-Service
+  identifier: ProdService
+  orgIdentifier: default
+  projectIdentifier: default_project
