@@ -9,5 +9,5 @@ infrastructureDefinition:
   spec:
     connectorRef: VMHostedCluster
     namespace: prod-portfolio
-    releaseName: prod-portfolio-<+INFRA_KEY_SHORT_ID>
+    releaseName: my-portfolio-<+INFRA_KEY_SHORT_ID>
   allowSimultaneousDeployments: false
