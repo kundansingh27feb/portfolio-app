@@ -15,7 +15,7 @@ service:
                 spec:
                   connectorRef: Github_portfolio
                   gitFetchType: Branch
-                  folderPath: portfolio
+                  folderPath: /
                   branch: main
               subChartPath: ""
               skipResourceVersioning: false
