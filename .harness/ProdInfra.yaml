@@ -1,0 +1,13 @@
+infrastructureDefinition:
+  name: Prod-Infra
+  identifier: ProdInfra
+  orgIdentifier: default
+  projectIdentifier: default_project
+  environmentRef: Production
+  deploymentType: NativeHelm
+  type: KubernetesDirect
+  spec:
+    connectorRef: VMHostedCluster
+    namespace: prod-portfolio
+    releaseName: prod-portfolio-<+INFRA_KEY_SHORT_ID>
+  allowSimultaneousDeployments: false
