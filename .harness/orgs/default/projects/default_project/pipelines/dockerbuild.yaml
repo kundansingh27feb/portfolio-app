@@ -85,6 +85,8 @@ pipeline:
                     outputAlias:
                       scope: Pipeline
                       key: Updatet Version
+                    delegateSelectors:
+                      - helm-delegate
                   timeout: 10m
         tags: {}
   properties:
