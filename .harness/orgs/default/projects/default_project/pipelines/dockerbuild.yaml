@@ -36,59 +36,6 @@ pipeline:
             spec: {}
         delegateSelectors:
           - helm-delegate
-    - stage:
-        name: Update Vesion
-        identifier: Update_Vesion
-        description: ""
-        type: Custom
-        spec:
-          execution:
-            steps:
-              - step:
-                  type: ShellScript
-                  name: Updatet Version
-                  identifier: Updatet_Version
-                  spec:
-                    shell: Bash
-                    executionTarget: {}
-                    source:
-                      type: Inline
-                      spec:
-                        script: |
-                          #!/bin/bash
-
-                          # Git config (still required to commit and push)
-                          git config --global user.email "kundansingh27feb@gmail.com"
-                          git config --global user.name "Kundansingh27feb"
-                          git clone https://github.com/kundansingh27feb/portfolio-app.git
-                          # Read current version
-                          VERSION=$(cat docker/version.txt | tr -d 'v')
-                          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-
-                          # Increment patch version
-                          NEW_PATCH=$((PATCH + 1))
-                          NEW_VERSION="v$MAJOR.$MINOR.$NEW_PATCH"
-
-                          echo "New version: $NEW_VERSION"
-
-                          # Build and push Docker image
-                          docker build -t kundansingh27feb/portfolio-app:$NEW_VERSION .
-                          docker push kundansingh27feb/portfolio-app:$NEW_VERSION
-
-                          # Update version.txt
-                          echo $NEW_VERSION > version.txt
-                          git add version.txt
-                          git commit -m "Bump version to $NEW_VERSION"
-                          git push origin main
-                    environmentVariables: []
-                    outputVariables: []
-                    outputAlias:
-                      scope: Pipeline
-                      key: Updatet Version
-                    delegateSelectors:
-                      - helm-delegate
-                  timeout: 10m
-        tags: {}
   properties:
     ci:
       codebase:
