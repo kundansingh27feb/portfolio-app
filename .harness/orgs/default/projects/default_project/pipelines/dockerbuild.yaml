@@ -41,6 +41,29 @@ pipeline:
                       type: branch
                       spec:
                         branch: main
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    shell: Sh
+                    command: |-
+                      #!/bin/bash
+
+                      # Git config (still required to commit and push)
+                      #git config --global user.email "ci@harness.io"
+                      #git config --global user.name "Harness CI"
+
+                      VERSION=$(cat docker/version.txt | tr -d 'v')
+                      IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+                      NEW_PATCH=$((PATCH + 1))
+                      NEW_VERSION="v$MAJOR.$MINOR.$NEW_PATCH"
+                      echo "New version: $NEW_VERSION"
+                      echo $NEW_VERSION > docker/version.txt
+                      git add docker/version.txt
+                      git commit -m "Bump version to $NEW_VERSION"
+                      git push origin main
           platform:
             os: Linux
             arch: Amd64
