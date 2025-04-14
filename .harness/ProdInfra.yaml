@@ -8,6 +8,6 @@ infrastructureDefinition:
   type: KubernetesDirect
   spec:
     connectorRef: VMHostedCluster
-    namespace: prod-portfolio
+    namespace: <+pipeline.variables.namespace>
     releaseName: my-portfolio-<+INFRA_KEY_SHORT_ID>
   allowSimultaneousDeployments: false
