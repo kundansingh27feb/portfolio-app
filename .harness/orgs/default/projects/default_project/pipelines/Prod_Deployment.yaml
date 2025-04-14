@@ -1,5 +1,5 @@
 pipeline:
-  name: Prod Deployment
+  name: Prod-Deployment-Portfolio
   identifier: Prod_Deployment
   projectIdentifier: default_project
   orgIdentifier: default
