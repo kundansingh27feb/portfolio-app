@@ -1,0 +1,82 @@
+pipeline:
+  name: Prod Deployment
+  identifier: Prod_Deployment
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Pre Approval
+        identifier: Pre_Approval
+        description: ""
+        type: Approval
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Pre Approval
+                  identifier: Pre_Approval
+                  type: HarnessApproval
+                  timeout: 1d
+                  spec:
+                    approvalMessage: Please review the following information and approve the pipeline progression...
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                      userGroups:
+                        - _project_all_users
+                    isAutoRejectEnabled: false
+                    approverInputs: []
+        tags: {}
+        delegateSelectors:
+          - helm-delegate
+    - stage:
+        name: Creating NS
+        identifier: Creating_NS
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: Creating NS
+                  identifier: Creating_NS
+                  spec:
+                    shell: Bash
+                    executionTarget: {}
+                    delegateSelectors:
+                      - helm-delegate
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+                          NAMESPACE=<+pipeline.variables.namespace>  # This will be replaced at runtime
+                          if ! kubectl get ns "$NAMESPACE" > /dev/null 2>&1; then
+                            echo "Creating namespace: $NAMESPACE"
+                            kubectl create ns "$NAMESPACE"
+                          else
+                            echo "Namespace $NAMESPACE already exists"
+                          fi
+                    environmentVariables: []
+                    outputVariables: []
+                    outputAlias:
+                      key: Creating NS
+                      scope: Stage
+                  timeout: 10m
+          environment:
+            environmentRef: Production
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: ProdInfra
+        tags: {}
+        delegateSelectors:
+          - helm-delegate
+        variables:
+          - name: namespace
+            type: String
+            description: Namespace Name?
+            required: true
+            value: <+input>
