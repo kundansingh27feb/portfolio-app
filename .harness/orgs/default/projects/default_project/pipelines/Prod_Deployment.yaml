@@ -80,3 +80,49 @@ pipeline:
             description: Namespace Name?
             required: true
             value: <+input>
+    - stage:
+        name: App Deployment
+        identifier: App_Deployment
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: NativeHelm
+          service:
+            serviceRef: ProdService
+          environment:
+            environmentRef: Production
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: ProdInfra
+          execution:
+            steps:
+              - step:
+                  name: Helm Deployment
+                  identifier: Helm_Deployment
+                  type: HelmDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    ignoreReleaseHistFailStatus: false
+            rollbackSteps:
+              - step:
+                  name: Helm Rollback
+                  identifier: helmRollback
+                  type: HelmRollback
+                  timeout: 10m
+                  spec: {}
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
+        variables:
+          - name: imageTag
+            type: String
+            description: Enter the image version
+            required: true
+            value: <+input>
+        delegateSelectors:
+          - helm-delegate
