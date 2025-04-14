@@ -60,7 +60,7 @@ pipeline:
                           # Git config (still required to commit and push)
                           git config --global user.email "kundansingh27feb@gmail.com"
                           git config --global user.name "Kundansingh27feb"
-
+                          git clone https://github.com/kundansingh27feb/portfolio-app.git
                           # Read current version
                           VERSION=$(cat docker/version.txt | tr -d 'v')
                           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
