@@ -1,0 +1,43 @@
+pipeline:
+  name: Build Portfolio Image
+  identifier: Build_Portfolio_Image
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Build Portfolio
+        identifier: Build_Portfolio
+        type: CI
+        spec:
+          cloneCodebase: false
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: VMHostedCluster
+              namespace: harness-ci
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  name: Build and Push Docker Image
+                  identifier: Build_Push
+                  type: BuildAndPushDockerRegistry
+                  spec:
+                    connectorRef: Docker_Connector
+                    repo: kundansingh27feb/portfolio
+                    tags:
+                      - latest
+                      - ${HARNESS_BUILD_NUMBER}
+                    dockerfile: Dockerfile
+                    context: .
+          caching:
+            enabled: false
+            paths: []
+          buildIntelligence:
+            enabled: false
+        description: ""
+        delegateSelectors:
+          - helm-delegate
