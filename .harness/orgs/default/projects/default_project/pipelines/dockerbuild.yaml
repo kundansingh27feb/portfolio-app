@@ -15,13 +15,6 @@ pipeline:
           caching:
             enabled: true
             override: true
-          infrastructure:
-            type: KubernetesDirect
-            spec:
-              connectorRef: VMHostedCluster
-              namespace: portfolio
-              nodeSelector: {}
-              os: Linux
           execution:
             steps:
               - step:
@@ -34,6 +27,11 @@ pipeline:
                     tags:
                       - latest
                     dockerfile: docker/Dockerfile
+          platform:
+            os: Linux
+          runtime:
+            type: Docker
+            spec: {}
         delegateSelectors:
           - helm-delegate
   properties:
