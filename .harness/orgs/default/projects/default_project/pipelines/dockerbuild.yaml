@@ -28,6 +28,40 @@ pipeline:
                     tags:
                       - v1.1.<+pipeline.sequenceId>
                     dockerfile: docker/Dockerfile
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    connectorRef: Docker_Connector
+                    image: portfolio-app
+                    shell: Sh
+                    command: |-
+                      #!/bin/bash
+
+                      # Git config (still required to commit and push)
+                      #git config --global user.email "ci@harness.io"
+                      #git config --global user.name "Harness CI"
+
+                      # Read current version
+                      VERSION=$(cat docker/version.txt | tr -d 'v')
+                      IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+                      # Increment patch version
+                      NEW_PATCH=$((PATCH + 1))
+                      NEW_VERSION="v$MAJOR.$MINOR.$NEW_PATCH"
+
+                      echo "New version: $NEW_VERSION"
+
+                      # Build and push Docker image
+                      #docker build -t kundansingh27feb/portfolio-app:$NEW_VERSION .
+                      #docker push kundansingh27feb/portfolio-app:$NEW_VERSION
+
+                      # Update version.txt
+                      echo $NEW_VERSION > docker/version.txt
+                      git add docker/version.txt
+                      git commit -m "Bump version to $NEW_VERSION"
+                      git push origin main
           platform:
             os: Linux
             arch: Amd64
