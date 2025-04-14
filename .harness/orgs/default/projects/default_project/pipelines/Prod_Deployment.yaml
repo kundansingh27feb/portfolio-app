@@ -126,3 +126,48 @@ pipeline:
             value: <+input>
         delegateSelectors:
           - helm-delegate
+    - stage:
+        name: Post Verification
+        identifier: Post_Verification
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: Post Validation
+                  identifier: Post_Validation
+                  spec:
+                    shell: Bash
+                    executionTarget: {}
+                    delegateSelectors:
+                      - helm-delegate
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          NAMESPACE=<+pipeline.variables.namespace>
+                          PREFIX="my-portfolio-"
+                          kubectl get pods -n $NAMESPACE
+                          kubectl wait --for=condition=Ready pods --all -n $NAMESPACE --timeout=60s
+                          SERVICE_NAME=$(kubectl get svc -n $NAMESPACE --no-headers -o custom-columns=":metadata.name" | grep "^$PREFIX")
+                          # Get Node IP (first worker node's InternalIP)
+                          NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[?(@.type=='InternalIP')].address}")
+                          # Get NodePort from service
+                          NODE_PORT=$(kubectl get svc "$SERVICE_NAME" -n $NAMESPACE -o jsonpath="{.spec.ports[0].nodePort}")
+                          echo "Accessible URL: http://$NODE_IP:$NODE_PORT"
+                          # Optional: curl to verify app responds
+                          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$NODE_IP:$NODE_PORT)
+                          if [ "$STATUS" -ne 200 ]; then
+                            echo "App is not healthy"
+                            exit 1
+                          fi
+                    environmentVariables: []
+                    outputVariables: []
+                    outputAlias:
+                      key: Post Validation
+                      scope: Pipeline
+                  timeout: 10m
+        tags: {}
