@@ -20,13 +20,13 @@ pipeline:
             steps:
               - step:
                   type: BuildAndPushDockerRegistry
-                  name: BuildAndPushDockerRegistry_1
+                  name: Build And Push Docker
                   identifier: BuildAndPushDockerRegistry_1
                   spec:
                     connectorRef: Docker_Connector
                     repo: kundansingh27feb/portfolio-app
                     tags:
-                      - latest
+                      - v1.1.<+pipeline.sequenceId>
                     dockerfile: docker/Dockerfile
           platform:
             os: Linux
