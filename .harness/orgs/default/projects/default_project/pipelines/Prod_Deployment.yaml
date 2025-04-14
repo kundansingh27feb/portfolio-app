@@ -64,7 +64,7 @@ pipeline:
                     outputVariables: []
                     outputAlias:
                       key: Creating NS
-                      scope: Stage
+                      scope: Pipeline
                   timeout: 10m
           environment:
             environmentRef: Production
