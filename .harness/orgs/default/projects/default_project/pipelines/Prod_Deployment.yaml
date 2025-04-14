@@ -74,12 +74,6 @@ pipeline:
         tags: {}
         delegateSelectors:
           - helm-delegate
-        variables:
-          - name: namespace
-            type: String
-            description: Namespace Name?
-            required: true
-            value: <+input>
     - stage:
         name: App Deployment
         identifier: App_Deployment
@@ -171,3 +165,9 @@ pipeline:
                       scope: Pipeline
                   timeout: 10m
         tags: {}
+  variables:
+    - name: namespace
+      type: String
+      description: Enter Namespace
+      required: true
+      value: <+input>
