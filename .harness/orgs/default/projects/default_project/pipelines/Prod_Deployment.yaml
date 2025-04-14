@@ -140,24 +140,70 @@ pipeline:
                     source:
                       type: Inline
                       spec:
-                        script: |-
+                        script: |
                           #!/bin/bash
                           NAMESPACE=<+pipeline.variables.namespace>
                           PREFIX="my-portfolio-"
-                          kubectl get pods -n $NAMESPACE
-                          kubectl wait --for=condition=Ready pods --all -n $NAMESPACE --timeout=60s
-                          SERVICE_NAME=$(kubectl get svc -n $NAMESPACE --no-headers -o custom-columns=":metadata.name" | grep "^$PREFIX")
-                          # Get Node IP (first worker node's InternalIP)
-                          NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[?(@.type=='InternalIP')].address}")
-                          # Get NodePort from service
-                          NODE_PORT=$(kubectl get svc "$SERVICE_NAME" -n $NAMESPACE -o jsonpath="{.spec.ports[0].nodePort}")
-                          echo "Accessible URL: http://$NODE_IP:$NODE_PORT"
-                          # Optional: curl to verify app responds
-                          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$NODE_IP:$NODE_PORT)
-                          if [ "$STATUS" -ne 200 ]; then
-                            echo "App is not healthy"
+                          echo "Validating namespace: $NAMESPACE"
+                          # List pods
+                          kubectl get pods -n "$NAMESPACE"
+                          # Wait for all pods to become Ready
+                          echo "Waiting for all pods to become Ready..."
+                          if ! kubectl wait --for=condition=Ready pods --all -n "$NAMESPACE" --timeout=60s; then
+                            echo "Not all pods became Ready in time."
                             exit 1
                           fi
+
+                          # Check for restarts
+                          echo "Checking for pod restarts..."
+                          if kubectl get pods -n "$NAMESPACE" | grep -v NAME | awk '{print $4}' | grep -qv "0"; then
+                            echo "Some pods have restarted unexpectedly."
+                            exit 1
+                          fi
+
+                          # Check for CrashLoopBackOff or Error state
+                          echo "?Checking for pods in error states..."
+                          if kubectl get pods -n "$NAMESPACE" | grep -E "CrashLoopBackOff|Error"; then
+                            echo "One or more pods are in CrashLoopBackOff/Error state."
+                            exit 1
+                          fi
+
+                          # Check deployment rollout
+                          echo "Checking deployment rollout status..."
+                          DEPLOYMENTS=$(kubectl get deployments -n "$NAMESPACE" -o name)
+                          for deploy in $DEPLOYMENTS; do
+                            if ! kubectl rollout status "$deploy" -n "$NAMESPACE" --timeout=60s; then
+                              echo "Rollout failed for $deploy"
+                              exit 1
+                            fi
+                          done
+
+                          # Service discovery
+                          SERVICE_NAME=$(kubectl get svc -n "$NAMESPACE" --no-headers -o custom-columns=":metadata.name" | grep "^$PREFIX")
+                          NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[?(@.type=='InternalIP')].address}")
+                          NODE_PORT=$(kubectl get svc "$SERVICE_NAME" -n "$NAMESPACE" -o jsonpath="{.spec.ports[0].nodePort}")
+                          APP_URL="http://$NODE_IP:$NODE_PORT"
+
+                          echo "Accessible URL: $APP_URL"
+
+                          # Curl test
+                          echo "Curling application endpoint..."
+                          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL")
+                          if [ "$STATUS" -ne 200 ]; then
+                            echo "Application did not return HTTP 200. Returned: $STATUS"
+                            exit 1
+                          fi
+
+                          # Check logs for errors
+                          echo "Scanning pod logs for 'error'..."
+                          for pod in $(kubectl get pods -n "$NAMESPACE" -o name); do
+                            if kubectl logs -n "$NAMESPACE" "$pod" | grep -i "error"; then
+                              echo "Found 'error' in logs of $pod"
+                              exit 1
+                            fi
+                          done
+
+                          echo "All validation checks passed. Ready for production rollout."
                     environmentVariables: []
                     outputVariables: []
                     outputAlias:
