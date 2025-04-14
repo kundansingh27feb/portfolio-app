@@ -3,7 +3,8 @@ pipeline:
   identifier: Build_Portfolio_Image
   projectIdentifier: default_project
   orgIdentifier: default
-  tags: {}
+  tags:
+    version: v1.1.<+pipeline.sequenceId>
   stages:
     - stage:
         name: docker build
