@@ -43,7 +43,7 @@ pipeline:
         repoName: kundansingh27feb/portfolio-app
         build: <+input>
   variables:
-    - name: Image
+    - name: ImageTags
       type: String
       description: ""
       required: true
