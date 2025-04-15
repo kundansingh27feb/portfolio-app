@@ -10,7 +10,7 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   #tag: <+stage.variables.imageTag>
-  tag: <+pipeline.variables.Image>
+  tag: <+input>.default(v1.1.<+pipeline.sequenceId>)
 
 imagePullSecrets: []
 nameOverride: ""
