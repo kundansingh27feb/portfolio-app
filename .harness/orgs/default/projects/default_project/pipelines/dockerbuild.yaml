@@ -36,6 +36,37 @@ pipeline:
             spec: {}
         delegateSelectors:
           - helm-delegate
+    - stage:
+        name: test
+        identifier: test
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: ShellScript_1
+                  identifier: ShellScript_1
+                  spec:
+                    shell: Bash
+                    executionTarget: {}
+                    delegateSelectors:
+                      - helm-delegate
+                    source:
+                      type: Inline
+                      spec:
+                        script: myImage=v1.1.<+pipeline.sequenceId>
+                    environmentVariables: []
+                    outputVariables:
+                      - name: myImage
+                        type: String
+                        value: v1.1.<+pipeline.sequenceId>
+                    outputAlias:
+                      scope: Pipeline
+                      key: myImage
+                  timeout: 10m
+        tags: {}
   properties:
     ci:
       codebase:
